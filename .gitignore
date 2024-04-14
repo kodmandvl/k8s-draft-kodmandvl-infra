@@ -1,0 +1,7 @@
+*.log
+/terraform_and_yc/.terraform
+/terraform_and_yc/.terraform.lock.hcl
+/terraform_and_yc/terraform_plan.out
+/terraform_and_yc/.terraform.tfstate.lock.info
+terraform.tfstate.backup
+terraform.tfstate

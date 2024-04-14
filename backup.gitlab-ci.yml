@@ -1,0 +1,43 @@
+image:
+  name: registry.gitlab.com/gitlab-org/gitlab-build-images:terraform
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+cache:
+  paths:
+    - terraform_and_yc/.terraform
+    - terraform_and_yc/.terraform.lock.hcl
+
+
+before_script:
+  - cat terraform_and_yc/.terraformrc > ~/.terraformrc
+  - |
+    cd terraform_and_yc/ 
+    terraform init
+  - cat $YC_SA_KEY > /tmp/my-admin-sa-key.json
+
+stages: 
+  - validate
+  - plan
+  - apply
+
+validate:
+  stage: validate
+  script:
+      terraform validate
+
+plan:
+  stage: plan
+  script:
+      terraform plan -out="terraform_plan.out"
+  artifacts:
+    paths:
+      - terraform_and_yc/terraform_plan.out
+    
+apply:
+  stage: apply
+  script:
+      terraform apply -auto-approve "terraform_plan.out"
+  when: manual
+
